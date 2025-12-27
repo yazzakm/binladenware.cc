@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STATUS | BINLADENWARE.CC</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: #0f0f0f;
+            --text-main: #ffffff;
+            --text-muted: #888;
+            --accent: #ff0000;
+            --border: #222;
+            --success: #00ff00;
+            --warning: #ffaa00;
+            --dev: #00d9ff; /* Added blue for development */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            background-image: radial-gradient(circle at 50% 0, #1a0505, #000000);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-box {
+            text-align: center;
+            margin-bottom: 50px;
+            border: 1px solid var(--border);
+            padding: 30px;
+            background: rgba(15, 15, 15, 0.6);
+        }
+
+        .header-box h1 {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        #clock {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .status-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .status-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .status-item:hover {
+            border-color: var(--accent);
+        }
+
+        .info h3 {
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        /* Status Colors */
+        .online { color: var(--success); }
+        .maint { color: var(--warning); }
+        .offline { color: var(--accent); }
+        .dev { color: var(--dev); } /* New blue class */
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 40px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+
+        .back-btn:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-box">
+        <h1>Software Status</h1>
+        <span id="clock">00:00:00</span>
+    </div>
+
+    <div class="status-grid">
+        <div class="status-item">
+            <div class="info">
+                <h3>Counter-Strike 2 External</h3>
+                <p>Last update: 2 hours ago</p>
+            </div>
+            <div class="indicator online">
+                <span>Working</span>
+                <div class="dot" style="background: var(--success);"></div>
+            </div>
+        </div>
+
+        <div class="status-item">
+            <div class="info">
+                <h3>Counter-Strike 2 DMA</h3>
+                <p>Currently in testing phase</p>
+            </div>
+            <div class="indicator dev">
+                <span>In Development</span>
+                <div class="dot" style="background: var(--dev);"></div>
+            </div>
+        </div>
+    </div>
+
+    <a href="/" class="back-btn">< BACK TO STORE</a>
+</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        const time = now.getHours().toString().padStart(2, '0') + ":" + 
+                     now.getMinutes().toString().padStart(2, '0') + ":" + 
+                     now.getSeconds().toString().padStart(2, '0');
+        const clockEl = document.getElementById('clock');
+        if(clockEl) clockEl.innerText = time;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STORE | BINLADENWARE.CC</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: #0f0f0f;
+            --text-main: #ffffff;
+            --text-muted: #888;
+            --accent: #ff0000;
+            --accent-glow: rgba(255, 0, 0, 0.25);
+            --border: #222;
+            --modal-bg: rgba(0, 0, 0, 0.95);
+            --success: #0f0;
+            --dev: #00d9ff;
+            --disabled: #444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            background-image: radial-gradient(circle at 50% 0, #1a0505, #000000);
+            min-height: 100vh;
+        }
+
+        body.modal-open { overflow: hidden; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--accent);
+            color: #000;
+            font-weight: 900;
+            text-transform: uppercase;
+            border: none;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px #fff;
+        }
+
+        .btn:disabled {
+            background: var(--disabled);
+            color: #222;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        header {
+            padding: 25px 0;
+            border-bottom: 1px solid var(--border);
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(5px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-img { max-height: 50px; width: auto; display: block; }
+
+        .nav-links { 
+            display: flex; 
+            gap: 40px; 
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links a { 
+            text-decoration: none; 
+            color: white; 
+            text-transform: uppercase; 
+            font-size: 0.9rem; 
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        .nav-links a:hover { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+
+        .hero { padding: 100px 0; text-align: center; }
+        .hero h1 { font-size: 4rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -2px; }
+        .hero span { color: var(--accent); }
+
+        .products-section { padding-bottom: 100px; }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            position: relative;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+
+        .card-img-wrap {
+            height: 180px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+        }
+
+        .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+
+        .status-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #000;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            border: 1px solid;
+            text-transform: uppercase;
+            z-index: 5;
+        }
+
+        .tag-working { color: var(--success); border-color: var(--success); }
+        .tag-dev { color: var(--dev); border-color: var(--dev); }
+        .tag-down { color: var(--accent); border-color: var(--accent); }
+        .tag-updating { color: var(--warning); border-color: var(--warning); }
+
+        .card-body { padding: 25px; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-bg);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: #0a0a0a;
+            width: 90%;
+            max-width: 800px;
+            border: 1px solid var(--accent);
+            padding: 40px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+
+        .sub-option {
+            display: block;
+            background: #151515;
+            border: 1px solid #333;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        input[type="radio"] { display: none; }
+        input[type="radio"]:checked + .sub-option {
+            border-color: var(--accent);
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .full-features h4 { color: #fff; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid var(--accent); display: inline-block; }
+        .full-features ul { margin-bottom: 20px; list-style: none; }
+        .full-features li { color: var(--text-muted); font-size: 0.85rem; }
+        .full-features li::before { content: "> "; color: var(--accent); }
+
+        footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; color: #555; }
+
+        @media(max-width: 768px) {
+            .modal-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo-container">
+                    <img src="img/binladen.png" alt="LOGO" class="logo-img">
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#shop">Products</a></li>
+                    <li><a href="/status" style="color:var(--accent)">Status</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Stay <span>Undetected</span></h1>
+            <p>External cheats built for security and performance.</p>
+            <a href="#shop" class="btn">View Cheats</a>
+        </div>
+    </section>
+
+    <section id="shop" class="products-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Cheats</h2>
+                <span style="color:var(--text-muted)">2 PRODUCTS FOUND</span>
+            </div>
+
+            <div class="grid">
+                <div class="card" onclick="openModal('cs2')">
+                    <div class="card-img-wrap">
+                        <span class="status-tag tag-working">● WORKING</span>
+                        <img src="https://placehold.co/600x400/000/333?text=CS2+EXT" alt="CS2">
+                    </div>
+                    <div class="card-body">
+                        <h3>Counter Strike 2 External</h3>
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                            <span style="font-weight: bold; font-size: 1.2rem;">$3.00+</span>
+                            <div class="btn" style="padding: 8px 15px; font-size: 0.7rem;">Details</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" onclick="openModal('cs2free')">
+                    <div class="card-img-wrap">
+                        <span class="status-tag tag-working">● WORKING</span>
+                        <img src="https://placehold.co/600x400/000/333?text=CS2+FREE" alt="CS2">
+                    </div>
+                    <div class="card-body">
+                        <h3>Counter Strike 2 External Free</h3>
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                            <span style="font-weight: bold; font-size: 1.2rem;">$0.00</span>
+                            <div class="btn" style="padding: 8px 15px; font-size: 0.7rem;">Details</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="openModal('cs2dma')">
+                    <div class="card-img-wrap">
+                        <span class="status-tag tag-dev">● IN DEVELOPMENT</span>
+                        <img src="https://placehold.co/600x400/000/333?text=CS2+DMA" alt="CS2 DMA">
+                    </div>
+                    <div class="card-body">
+                        <h3>Counter Strike 2 DMA</h3>
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                            <span style="font-weight: bold; font-size: 1.2rem;">$5.00+</span>
+                            <div class="btn" style="padding: 8px 15px; font-size: 0.7rem;">Details</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal(null)">&times;</span>
+            <div class="modal-grid">
+                <div class="full-features" id="modalFeatureList"></div>
+                <div class="purchase-side">
+                    <h4>Subscription</h4>
+                    <div id="modalSubOptions" style="margin-top:20px"></div>
+                    <button id="purchaseBtn" class="btn" style="width: 100%; margin-top: 20px;" onclick="handlePurchase()">Purchase Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 BINLADENWARE. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const products = {
+            'cs2': {
+                status: 'WORKING',
+                title: 'CS2 EXTERNAL',
+                desc: 'Undetected external cheat for Counter-Strike 2.',
+                features: {
+                    'Visuals': ['Not done'],
+                    'Aimbot': ['Not done']
+                },
+                subs: [
+                    { label: '7 DAYS', price: '$3.00', url: 'https://pay.example/cs2-7' },
+                    { label: '30 DAYS', price: '$5.00', url: 'https://pay.example/cs2-30' },
+                    { label: 'LIFETIME', price: '$30.00', url: 'https://pay.example/cs2-life' }
+                ]
+            },
+            'cs2free': {
+                status: 'WORKING',
+                title: 'CS2 EXTERNAL',
+                desc: 'External CS2 cheat with limited features.',
+                features: {
+                    'Visuals': ['Box ESP (2D)', 'Skeleton / Bone ESP', 'Health Text', 'Head Square', 'Radr'],
+                    'Aimbot': ['None']
+                },
+                subs: [
+                    { label: 'Download', price: '$0.00', url: 'https://files.catbox.moe/ynzlaz.zip' },
+                ]
+            },
+            'cs2dma': {
+                status: 'IN DEVELOPMENT',
+                title: 'CS2 DMA HARDWARE',
+                desc: 'The ultimate undetectable hardware solution.',
+                features: {
+                    'Visuals': ['Box ESP (2D/Corner)', 'Skeleton / Bone ESP', 'Health / Armor Bar', 'Head Dots'],
+                    'Hardware': ['DMA Hardware Required', 'Zero Memory Write', 'Web Radar Support']
+                },
+                subs: [
+                    { label: '7 DAYS', price: '$5.00', url: 'https://pay.example/dma-7' },
+                    { label: '30 DAYS', price: '$7.50', url: 'https://pay.example/dma-30' },
+                    { label: 'LIFETIME', price: '$45.00', url: 'https://pay.example/dma-life' }
+                ]
+            },
+        };
+
+        function openModal(id) {
+            const data = products[id];
+            if(!data) return;
+
+            const isLocked = ['IN DEVELOPMENT', 'UPDATING', 'DOWN', 'DTC'].includes(data.status);
+            const pBtn = document.getElementById('purchaseBtn');
+
+            let featureHTML = `<h2>${data.title}</h2><p style="margin: 10px 0 25px 0; color:var(--accent)">${data.desc}</p>`;
+            for(const category in data.features) {
+                featureHTML += `<h4>${category}</h4><ul>`;
+                data.features[category].forEach(feat => { featureHTML += `<li>${feat}</li>`; });
+                featureHTML += `</ul>`;
+            }
+            document.getElementById('modalFeatureList').innerHTML = featureHTML;
+
+            let subHTML = '';
+            data.subs.forEach((sub, index) => {
+                subHTML += `
+                    <label>
+                        <input type="radio" name="sub" data-url="${sub.url}" ${index === 0 ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+                        <span class="sub-option" style="${isLocked ? 'opacity:0.5; cursor:not-allowed;' : ''}"><strong>${sub.label}</strong><br><small>${sub.price}</small></span>
+                    </label>
+                `;
+            });
+            document.getElementById('modalSubOptions').innerHTML = subHTML;
+
+            pBtn.disabled = isLocked;
+            pBtn.innerText = isLocked ? data.status : 'Purchase Now';
+
+            document.getElementById('modalOverlay').style.display = 'flex';
+            document.body.classList.add('modal-open');
+        }
+
+        function closeModal(e) {
+            if(e && e.target !== document.getElementById('modalOverlay') && e.type !== 'click') return;
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        function handlePurchase() {
+            const selected = document.querySelector('input[name="sub"]:checked');
+            if (selected) {
+                window.open(selected.getAttribute('data-url'), '_blank');
+            }
+        }
+    </script>
+</body>
+</html>
